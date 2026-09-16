@@ -172,7 +172,7 @@ MySQL, PostgreSQL, MongoDB (basic), plus Next.js / Flutter / Firebase where the 
 |---|---|---|---|
 | **Task Management System** | Internship · full-stack | [GitHub](https://github.com/afsarudeen/task-management-system) | `React` `Tailwind` `Laravel` `MySQL` `REST` |
 | **Nila Tiles** | **Real client project** | [Live](https://nilatiles.in) | `React` `Tailwind` |
-| **Ram Prabha Builders** | **Real client project** | — | `React` `Tailwind` |
+| **Ram Prabha Builders** | **Real client project** | [Live](https://ramprababuilders.in/) | `React` `Tailwind` |
 | **Smart Canteen Pre-Order** | College project | [GitHub](https://github.com/afsarudeen/smart-canteen-preorder) | `Flutter` `Firebase` |
 | **Asset Management System** | Full-stack project | — | `React` `Next.js` `Node` `Express` `PostgreSQL` |
 
@@ -188,7 +188,7 @@ MySQL, PostgreSQL, MongoDB (basic), plus Next.js / Flutter / Firebase where the 
 
 **Nila Tiles** — real client showroom site ([nilatiles.in](https://nilatiles.in)): product categories and filtering, responsive/mobile UI, navigation and SEO-focused content, reusable React components and Tailwind layouts.
 
-**Ram Prabha Builders** — real client construction-business site: responsive sections, business-focused layouts, React components, Tailwind CSS.
+**Ram Prabha Builders** — real client construction-business site ([ramprababuilders.in](https://ramprababuilders.in/)): responsive sections, business-focused layouts, React components, Tailwind CSS.
 
 **Smart Canteen Pre-Order System** — Flutter + Firebase college canteen app: auth, orders, token generation, digital billing, Firebase auth and data.
 
