@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="200" viewBox="0 0 480 200" role="img" aria-label="Contribution calendar">
+  <rect x="0.5" y="0.5" width="479" height="199" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="240.0" y="92.0" text-anchor="middle" font-family="ui-sans-serif,Segoe UI,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#39d353">Contribution calendar</text>
+  <text x="240.0" y="116.0" text-anchor="middle" font-family="ui-sans-serif,Segoe UI,Helvetica,Arial,sans-serif" font-size="11" fill="#8b949e">Generated on GitHub by the Metrics workflow (needs METRICS_TOKEN)</text>
+</svg>

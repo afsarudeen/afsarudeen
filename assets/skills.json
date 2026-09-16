@@ -1,0 +1,13 @@
+{
+  "title": "Skill Radar",
+  "_comment": "Self-rated visualization scale (0-100) for chart shape only — not measured benchmarks or seniority claims. Edit freely.",
+  "axes": [
+    { "label": "JavaScript", "value": 78 },
+    { "label": "React",      "value": 76 },
+    { "label": "Node.js",    "value": 70 },
+    { "label": "Tailwind",   "value": 80 },
+    { "label": "REST APIs",  "value": 72 },
+    { "label": "Databases",  "value": 66 },
+    { "label": "Git",        "value": 74 }
+  ]
+}

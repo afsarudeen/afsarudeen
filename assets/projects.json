@@ -1,0 +1,50 @@
+{
+  "_comment": "Featured work in README order. Star/fork/language are filled from the GitHub API when the repo exists on the account. description here is the card blurb. Projects without a public repo still appear in the README; cards for those are generated offline.",
+  "projects": [
+    {
+      "repo": "task-management-system",
+      "title": "Task Management System",
+      "kind": "Internship · Full-stack",
+      "description": "Task and workflow management across organizations, teams, projects, and tasks — auth, roles, CRUD, and REST API integration.",
+      "stack": ["React.js", "Tailwind CSS", "Laravel", "MySQL", "REST API"],
+      "github": "https://github.com/afsarudeen/task-management-system",
+      "live": null
+    },
+    {
+      "repo": "nila-tiles",
+      "title": "Nila Tiles",
+      "kind": "Real client project",
+      "description": "Responsive tile showroom site for a real client — product categories, filtering, mobile UI, SEO-focused content, and reusable React components.",
+      "stack": ["React.js", "Tailwind CSS"],
+      "github": null,
+      "live": "https://nilatiles.in"
+    },
+    {
+      "repo": "ram-prabha-builders",
+      "title": "Ram Prabha Builders",
+      "kind": "Real client project",
+      "description": "Business website for a construction company — responsive sections, business-focused layouts, and Tailwind-driven React components.",
+      "stack": ["React.js", "Tailwind CSS"],
+      "github": null,
+      "live": null
+    },
+    {
+      "repo": "smart-canteen-preorder",
+      "title": "Smart Canteen Pre-Order",
+      "kind": "College project",
+      "description": "College canteen pre-ordering app with authentication, order flow, token generation, digital billing, and Firebase-backed data.",
+      "stack": ["Flutter", "Firebase"],
+      "github": "https://github.com/afsarudeen/smart-canteen-preorder",
+      "live": null
+    },
+    {
+      "repo": "asset-management-system",
+      "title": "Asset Management System",
+      "kind": "Full-stack project",
+      "description": "Asset management app with separate user and admin interfaces, REST APIs, CRUD flows, and PostgreSQL integration.",
+      "stack": ["React.js", "Next.js", "Node.js", "Express.js", "PostgreSQL"],
+      "github": null,
+      "live": null
+    }
+  ]
+}
