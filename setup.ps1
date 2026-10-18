@@ -28,7 +28,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 
-Write-Host "`n[1/3] drawing the skill radar" -ForegroundColor Cyan
+Write-Host "`n[1/4] generating 3D vector banners and section badges" -ForegroundColor Cyan
+python (Join-Path $root 'scripts\make_3d_assets.py')
+
+Write-Host "`n[2/4] drawing the skill radar" -ForegroundColor Cyan
 python (Join-Path $root 'scripts\radar.py') --data (Join-Path $root 'assets\skills.json') -o (Join-Path $root 'assets\radar')
 
 if ($Username) {
@@ -66,4 +69,4 @@ if ($Image) {
     Write-Host "`n[2/3] no -Image given, keeping existing portrait" -ForegroundColor DarkGray
 }
 
-Write-Host "`n[3/3] done. open preview.html, then read SETUP.md for the GitHub Actions side.`n" -ForegroundColor Green
+Write-Host "`n[4/4] done. open preview.html, then read SETUP.md for the GitHub Actions side.`n" -ForegroundColor Green

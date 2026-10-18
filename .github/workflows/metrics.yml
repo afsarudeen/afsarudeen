@@ -1,12 +1,23 @@
 name: Metrics
 
+# NOTE: Automated schedule and push triggers are intentionally disabled because
+# METRICS_TOKEN is not yet configured in Repository Secrets. Without this secret,
+# lowlighter/metrics fails after pulling the docker image (~42-46s) with:
+# "Error: You must provide a valid GitHub personal token to gather your metrics"
+# causing repeated failure notification emails every 6 hours.
+#
+# TO RE-ENABLE:
+# 1. Create a Personal Access Token (classic) at https://github.com/settings/tokens
+#    with `read:user` (and optionally `repo`) scopes.
+# 2. Add it to Repo -> Settings -> Secrets and variables -> Actions as `METRICS_TOKEN`.
+# 3. Uncomment the schedule trigger below and run via workflow_dispatch to test.
+
 on:
-  schedule:
-    # every 6 hours
-    - cron: "0 */6 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
+  # schedule:
+  #   - cron: "0 */6 * * *"
+  # push:
+  #   branches: [main]
 
 permissions:
   contents: write
@@ -14,6 +25,8 @@ permissions:
 jobs:
   metrics:
     runs-on: ubuntu-latest
+    if: ${{ secrets.METRICS_TOKEN != '' }}
+
     steps:
       # ------------------------------------------------------------------ #
       # 3D isometric contribution calendar

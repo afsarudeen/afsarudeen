@@ -12,6 +12,7 @@ on:
       - "scripts/radar.py"
       - "scripts/cards.py"
       - "scripts/local_cards.py"
+      - "scripts/make_3d_assets.py"
       - ".github/workflows/radar.yml"
 
 permissions:
@@ -26,6 +27,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      # 3D isometric banners and section badges
+      - name: 3D vector assets
+        run: python scripts/make_3d_assets.py
 
       # Hand-authored skill radar (edit assets/skills.json to change it)
       - name: Skill radar
@@ -42,7 +47,7 @@ jobs:
             --limit 7 --values --curve 0.4 \
             --exclude "shell,makefile,dockerfile,batchfile,procfile"
 
-      # Self-hosted stat + repo cards (GitHub-backed projects)
+      # Self-hosted stat + repo cards (GitHub-backed projects with live stars/forks)
       - name: Stat and repo cards
         env:
           GITHUB_TOKEN: ${{ secrets.METRICS_TOKEN || secrets.GITHUB_TOKEN }}
@@ -52,15 +57,14 @@ jobs:
             --projects assets/projects.json \
             --out assets
 
-      # Featured-work cards with human titles / stack chips (overlays GitHub-backed
-      # repo cards so unpublished client work and public repos share one look)
+      # Local project cards for work without a public repository
       - name: Local project cards
-        run: python scripts/local_cards.py --projects assets/projects.json --out assets --force
+        run: python scripts/local_cards.py --projects assets/projects.json --out assets
 
       - name: Commit if changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/radar-*.svg assets/card-*.svg
+          git add assets/radar-*.svg assets/card-*.svg assets/banner-3d.svg assets/badge-status.svg assets/sec-*.svg
           git diff --staged --quiet || git commit -m "chore: refresh charts and cards"
           git push

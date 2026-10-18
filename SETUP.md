@@ -40,24 +40,22 @@ Without this, Radar and Snake workflows fail on push.
 3. Repo → **Settings** → **Secrets and variables** → **Actions** →  
    **New repository secret** → name **`METRICS_TOKEN`**, paste the value
 
+> **Note on Metrics Workflow:** The automated cron schedule in `.github/workflows/metrics.yml`
+> has been deliberately disabled because `METRICS_TOKEN` was unconfigured, causing repeated 42–46s failure emails every 6 hours.
+> Once you add `METRICS_TOKEN`, you can uncomment the schedule in `.github/workflows/metrics.yml` and test it via manual `workflow_dispatch`.
+
 ---
 
-## 4. Run the workflows
+## 4. Workflows & Automation
 
-Repo → **Actions** → enable workflows if prompted → **Run workflow** on each:
+Repo → **Actions** → **Run workflow** on each:
 
-| workflow | produces | lands in |
-|---|---|---|
-| **Metrics** | 3D isometric calendar, language mix, achievements | `assets/metrics.*.svg` on `main` |
-| **Snake** | snake eating the contribution graph | the `output` branch |
-| **Charts and cards** | spider charts, stat card, project cards | `assets/radar*.svg`, `assets/card-*.svg` on `main` |
+| workflow | status | produces | lands in |
+|---|---|---|---|
+| **Charts and cards** | Active (daily) | spider charts, stat card, verified repo cards | `assets/radar*.svg`, `assets/card-*.svg` on `main` |
+| **Snake** | Active (12h) | snake eating the contribution graph | the `output` branch |
+| **Metrics** | Standby / Manual | 3D isometric calendar, languages, achievements | `assets/metrics.*.svg` (requires `METRICS_TOKEN`) |
 
-First run takes a couple of minutes. After that: metrics every 6h, snake every 12h, charts daily.
-
-> Snake images are referenced from the `output` branch via `raw.githubusercontent.com`,  
-> so they 404 until Snake has run once. Expected.
-
-Until Metrics runs, `assets/metrics.*.svg` are honest placeholders.
 
 ---
 
@@ -78,15 +76,18 @@ Open `preview.html` to replay the row-reveal animation.
 ---
 
 ## 6. Local regeneration cheatsheet
-
+ 
 ```bash
+# 3D vector headers, banner, and status badges
+python scripts/make_3d_assets.py
+
 # skill radar (from assets/skills.json)
 python scripts/radar.py --data assets/skills.json -o assets/radar
 
 # language radar (live GitHub language bytes)
 python scripts/radar.py --github afsarudeen -o assets/radar-langs --limit 7 --values --curve 0.4
 
-# stats + GitHub-backed project cards
+# stats + GitHub-backed project cards (verified public repos)
 python scripts/cards.py --user afsarudeen --projects assets/projects.json --out assets
 
 # cards for work without a public repo (client / unpublished)

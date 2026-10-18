@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 """
-local_cards.py - render project cards for featured work that is NOT on the
+local_cards.py - render 3D-inspired project cards for featured work that is NOT on the
 public GitHub API (private, unpublished, or client work without a repo).
 
 Stdlib only. Complements scripts/cards.py.
 
     python scripts/local_cards.py --projects assets/projects.json --out assets
-
-A card is written only when the entry has no resolvable public repo on the
-account (or when --force is set). Output: card-<slug>-{dark,light}.svg
-where slug is the `repo` field (filename-safe).
 """
 
 from __future__ import annotations
@@ -23,14 +19,18 @@ from pathlib import Path
 # Match cards.py theme tokens so the pair looks like one system
 THEMES = {
     "dark": {
-        "bg": "#0d1117", "border": "#30363d", "title": "#39d353",
+        "bg_top": "#111827", "bg_bot": "#0a0e17",
+        "border": "#243247", "border_glow": "#00F2FE",
+        "title": "#39d353", "title_alt": "#00F2FE",
         "text": "#c9d1d9", "muted": "#8b949e", "value": "#e6edf3",
-        "accent": "#39d353", "chip": "#21262d",
+        "accent": "#39d353", "chip_bg": "#162032", "chip_border": "#283953",
     },
     "light": {
-        "bg": "#ffffff", "border": "#d0d7de", "title": "#1a7f37",
+        "bg_top": "#ffffff", "bg_bot": "#f8fafc",
+        "border": "#d0d7de", "border_glow": "#1a7f37",
+        "title": "#1a7f37", "title_alt": "#0969da",
         "text": "#1f2328", "muted": "#57606a", "value": "#1f2328",
-        "accent": "#1a7f37", "chip": "#f6f8fa",
+        "accent": "#1a7f37", "chip_bg": "#f3f4f6", "chip_border": "#d0d7de",
     },
 }
 
@@ -41,10 +41,10 @@ LANG_COLOR = {
     "Node.js": "#339933", "Express.js": "#ffffff", "Laravel": "#ff2d20",
     "MySQL": "#4479a1", "PostgreSQL": "#336791", "MongoDB": "#47a248",
     "Flutter": "#02569b", "Firebase": "#ffca28", "Tailwind CSS": "#38bdf8",
-    "REST API": "#e34c26",
+    "REST API": "#e34c26", "Dart": "#00B4AB",
 }
 
-FONT = "ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif"
+FONT = "ui-sans-serif,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif"
 ICON_REPO = (
     "M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 "
     "0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 "
@@ -98,43 +98,73 @@ def slugify(name: str) -> str:
 
 def render_card(entry: dict, theme: str) -> str:
     c = THEMES[theme]
-    W, H = 420, 148
+    W, H = 420, 142
     pad = 18
     title = entry.get("title") or entry.get("repo") or "Project"
     kind = entry.get("kind") or ""
-    desc = entry.get("description") or "No description yet."
+    desc = entry.get("description") or "No description provided."
     stack = entry.get("stack") or []
     primary = stack[0] if stack else None
 
+    card_id = f"lc_{theme}_{slugify(title)}"
+    defs = []
+    defs.append(f'<linearGradient id="{card_id}_bg" x1="0%" y1="0%" x2="100%" y2="100%">')
+    defs.append(f'<stop offset="0%" stop-color="{c["bg_top"]}"/>')
+    defs.append(f'<stop offset="100%" stop-color="{c["bg_bot"]}"/>')
+    defs.append('</linearGradient>')
+
+    if theme == "dark":
+        defs.append(f'<linearGradient id="{card_id}_edge" x1="0%" y1="0%" x2="100%" y2="0%">')
+        defs.append('<stop offset="0%" stop-color="#00F2FE" stop-opacity="0.85"/>')
+        defs.append('<stop offset="50%" stop-color="#39D353" stop-opacity="0.95"/>')
+        defs.append('<stop offset="100%" stop-color="#4FACFE" stop-opacity="0.4"/>')
+        defs.append('</linearGradient>')
+        top_accent = f'<path d="M 14 1.5 L {W - 14} 1.5" stroke="url(#{card_id}_edge)" stroke-width="2" stroke-linecap="round"/>'
+        ambient = (f'<circle cx="{W - 40}" cy="20" r="70" fill="#00F2FE" fill-opacity="0.04" filter="blur(20px)"/>'
+                   f'<circle cx="30" cy="{H - 20}" r="60" fill="#39D353" fill-opacity="0.03" filter="blur(20px)"/>')
+    else:
+        top_accent = f'<path d="M 14 1.5 L {W - 14} 1.5" stroke="{c["border_glow"]}" stroke-width="2" stroke-linecap="round"/>'
+        ambient = ""
+
     out = []
-    out.append(icon(ICON_REPO, pad, pad, 15, c["muted"]))
+    # 3D Icon container box
     out.append(
-        f'<text x="{pad + 22}" y="{pad + 12}" font-size="14.5" font-weight="700" '
+        f'<rect x="{pad}" y="{pad}" width="26" height="26" rx="6" '
+        f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
+    )
+    out.append(icon(ICON_REPO, pad + 5, pad + 5, 16, c["title"]))
+
+    out.append(
+        f'<text x="{pad + 34}" y="{pad + 17}" font-size="14.5" font-weight="700" '
         f'fill="{c["title"]}">{esc(title)}</text>'
     )
     if kind:
         out.append(
-            f'<text x="{W - pad}" y="{pad + 12}" font-size="10.5" text-anchor="end" '
+            f'<text x="{W - pad}" y="{pad + 17}" font-size="10.5" font-weight="600" text-anchor="end" '
             f'fill="{c["muted"]}">{esc(kind)}</text>'
         )
 
     for i, line in enumerate(wrap(desc, 11.5, W - 2 * pad, 3)):
         out.append(
-            f'<text x="{pad}" y="{pad + 36 + i * 16}" font-size="11.5" '
+            f'<text x="{pad}" y="{pad + 44 + i * 16}" font-size="11.5" '
             f'fill="{c["text"]}">{esc(line)}</text>'
         )
 
-    fy = H - pad - 2
+    fy = H - pad
     x = pad
     if primary:
         col = LANG_COLOR.get(primary, c["muted"])
-        # On light theme Next.js/Express white dots need a border; keep simple
         if col.lower() in ("#ffffff", "#fff") and theme == "light":
             col = c["muted"]
-        out.append(f'<circle cx="{x + 5}" cy="{fy - 4}" r="5" fill="{col}"/>')
         label = " · ".join(stack[:3]) if stack else primary
+        lw = text_width(label, 10.5) + 24
         out.append(
-            f'<text x="{x + 15}" y="{fy}" font-size="11" fill="{c["muted"]}">'
+            f'<rect x="{x}" y="{fy - 14}" width="{lw:.0f}" height="18" rx="9" '
+            f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
+        )
+        out.append(f'<circle cx="{x + 8}" cy="{fy - 5}" r="4" fill="{col}"/>')
+        out.append(
+            f'<text x="{x + 16}" y="{fy - 1}" font-size="10.5" font-weight="600" fill="{c["text"]}">'
             f'{esc(label)}</text>'
         )
 
@@ -143,9 +173,12 @@ def render_card(entry: dict, theme: str) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
         f'width="{W}" height="{H}" role="img" aria-label="{esc(title)} project card" '
         f'font-family="{FONT}">'
-        f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="10" '
-        f'fill="{c["bg"]}" stroke="{c["border"]}"/>'
-        f"{body}</svg>"
+        f'<defs>{"".join(defs)}</defs>'
+        f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="12" '
+        f'fill="url(#{card_id}_bg)" stroke="{c["border"]}" stroke-width="1"/>'
+        f'{top_accent}'
+        f'{ambient}'
+        f'{body}</svg>'
     )
 
 
@@ -166,9 +199,6 @@ def main(argv=None):
     projects = data.get("projects") or []
     args.out.mkdir(parents=True, exist_ok=True)
 
-    # Entries that cards.py can cover: have a real public repo name that matched.
-    # We treat an existing card-<repo>-dark.svg as "already generated by cards.py"
-    # unless --force.
     written = 0
     for entry in projects:
         repo = entry.get("repo") or ""
@@ -176,20 +206,13 @@ def main(argv=None):
         local_stem = f"card-{slug}"
         dest_dark = args.out / f"{local_stem}-dark.svg"
 
-        # Heuristic: cards.py writes GitHub-backed cards with the live repo
-        # name and a 132px-tall frame. Local cards are 148px and use the
-        # human title. If a public github URL is set AND cards.py already
-        # produced a matching file, skip — unless --force.
         has_github = bool(entry.get("github"))
         if has_github and dest_dark.exists() and not args.force:
-            # Peek aria-label: GitHub-backed cards say "<repo> repository card"
             label = dest_dark.read_text(encoding="utf-8")[:300]
             if "repository card" in label:
                 print(f"  skip {slug} (GitHub-backed card present)")
                 continue
 
-        # Unpublished / client work (no github URL) always gets a local card.
-        # Also rewrite when previous run left a local card or nothing.
         for theme in ("dark", "light"):
             dest = args.out / f"{local_stem}-{theme}.svg"
             dest.write_text(render_card(entry, theme), encoding="utf-8")

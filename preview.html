@@ -1,66 +1,160 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>afsarudeen · profile assets preview</title>
-<style>
-  :root { color-scheme: dark }
-  body { background:#0d1117; color:#c9d1d9; font:15px/1.5 ui-sans-serif,Segoe UI,system-ui,sans-serif;
-         margin:0; padding:40px; }
-  h1 { font-size:20px; color:#39d353; letter-spacing:.02em }
-  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:#8b949e;
-       border-bottom:1px solid #21262d; padding-bottom:8px; margin:44px 0 18px }
-  .row { display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start }
-  .card { background:#0d1117; border:1px solid #21262d; border-radius:10px; padding:18px }
-  .card.light { background:#fff }
-  .tag { font:11px ui-monospace,Consolas,monospace; color:#8b949e; display:block; margin-bottom:10px }
-  img { display:block; max-width:100% }
-  button { background:#21262d; color:#c9d1d9; border:1px solid #30363d; border-radius:6px;
-           padding:5px 12px; font:inherit; font-size:12px; cursor:pointer; margin-left:14px;
-           vertical-align:middle; text-transform:none; letter-spacing:0 }
-  button:hover { background:#30363d; border-color:#39d353; color:#39d353 }
-  .missing { color:#8b949e; font-style:italic; font-size:13px }
-</style>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mohammed Afsarudeen K · 3D Profile Assets Preview</title>
+  <style>
+    :root { color-scheme: dark }
+    body {
+      background: #090d16;
+      color: #c9d1d9;
+      font: 14px/1.6 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 22px;
+      color: #00F2FE;
+      letter-spacing: .02em;
+      margin-bottom: 4px;
+    }
+    .subtitle { color: #8b949e; margin-top: 0; font-size: 13px; }
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #39D353;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 8px;
+      margin: 44px 0 18px;
+    }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+    .card {
+      background: #0d121f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card.light { background: #ffffff; border-color: #d0d7de; }
+    .tag { font: 11px ui-monospace, Consolas, monospace; color: #8b949e; display: block; margin-bottom: 10px; }
+    img { display: block; max-width: 100%; height: auto; }
+    button {
+      background: #162032;
+      color: #00F2FE;
+      border: 1px solid #283953;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 14px;
+      vertical-align: middle;
+      text-transform: none;
+      letter-spacing: 0;
+      transition: all 0.2s ease;
+    }
+    button:hover { background: #1e2c45; border-color: #00F2FE; color: #ffffff; }
+  </style>
+</head>
+<body>
 
-<h1>afsarudeen — profile assets (local preview)</h1>
-<p class="missing">Each asset is shown against both a dark and a light card, the way GitHub will render it.</p>
+  <h1>Mohammed Afsarudeen K — 3D Profile Assets Preview</h1>
+  <p class="subtitle">Local visual verification for dark & light rendering modes across all profile components.</p>
 
-<h2>portrait <button id="replay">replay the load-in</button></h2>
-<div class="row">
-  <div class="card"><span class="tag">portrait.svg (on dark)</span>
-    <img class="portrait" src="assets/portrait.svg" width="300" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'missing',textContent:'not generated yet — run dotify.py'}))"></div>
-  <div class="card light"><span class="tag" style="color:#57606a">portrait.svg (on light)</span>
-    <img class="portrait" src="assets/portrait.svg" width="300" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'missing',textContent:'not generated yet'}))"></div>
-</div>
-<script>
-  document.getElementById('replay').onclick = () => {
-    document.querySelectorAll('img.portrait').forEach(img => {
-      img.src = 'assets/portrait.svg?' + Date.now();
-    });
-  };
-</script>
+  <h2>3D Hero Banner & Status</h2>
+  <div class="row">
+    <div class="card" style="width: 100%;">
+      <span class="tag">banner-3d.svg &amp; badge-status.svg</span>
+      <img src="assets/banner-3d.svg" style="max-width: 840px; margin-bottom: 16px;">
+      <img src="assets/badge-status.svg" style="max-width: 540px;">
+    </div>
+  </div>
 
-<h2>skill radar</h2>
-<div class="row">
-  <div class="card"><span class="tag">radar-dark.svg</span><img src="assets/radar-dark.svg" width="440"></div>
-  <div class="card light"><span class="tag" style="color:#57606a">radar-light.svg</span><img src="assets/radar-light.svg" width="440"></div>
-</div>
+  <h2>Portrait (Animated Row Reveal) <button id="replay">Replay Reveal Animation</button></h2>
+  <div class="row">
+    <div class="card">
+      <span class="tag">portrait.svg (Dark Canvas)</span>
+      <img class="portrait" src="assets/portrait.svg" width="300" alt="Portrait">
+    </div>
+    <div class="card light">
+      <span class="tag" style="color:#57606a">portrait.svg (Light Canvas)</span>
+      <img class="portrait" src="assets/portrait.svg" width="300" alt="Portrait">
+    </div>
+  </div>
 
-<h2>language radar</h2>
-<div class="row">
-  <div class="card"><span class="tag">radar-langs-dark.svg</span>
-    <img src="assets/radar-langs-dark.svg" width="440" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'missing',textContent:'generated by the Radar workflow'}))"></div>
-  <div class="card light"><span class="tag" style="color:#57606a">radar-langs-light.svg</span>
-    <img src="assets/radar-langs-light.svg" width="440" onerror="this.replaceWith(Object.assign(document.createElement('p'),{className:'missing',textContent:'not generated yet'}))"></div>
-</div>
+  <h2>3D Section Badges</h2>
+  <div class="row">
+    <div class="card">
+      <span class="tag">Section Badges (01 to 08)</span>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <img src="assets/sec-about.svg" width="480">
+        <img src="assets/sec-skills.svg" width="480">
+        <img src="assets/sec-repos.svg" width="480">
+        <img src="assets/sec-projects.svg" width="480">
+        <img src="assets/sec-experience.svg" width="480">
+        <img src="assets/sec-education.svg" width="480">
+        <img src="assets/sec-telemetry.svg" width="480">
+        <img src="assets/sec-connect.svg" width="480">
+      </div>
+    </div>
+  </div>
 
-<h2>stats + project cards</h2>
-<div class="row">
-  <div class="card"><span class="tag">card-stats-dark.svg</span><img src="assets/card-stats-dark.svg" width="480"></div>
-  <div class="card"><span class="tag">card-nila-tiles-dark.svg</span><img src="assets/card-nila-tiles-dark.svg" width="420"></div>
-  <div class="card"><span class="tag">card-task-management-system-dark.svg</span><img src="assets/card-task-management-system-dark.svg" width="420"></div>
-</div>
+  <h2>Featured Repository Cards (Verified Public Repos)</h2>
+  <div class="row">
+    <div class="card">
+      <span class="tag">card-task-management-system-dark.svg</span>
+      <img src="assets/card-task-management-system-dark.svg" width="420">
+    </div>
+    <div class="card">
+      <span class="tag">card-smart-canteen-preorder-dark.svg</span>
+      <img src="assets/card-smart-canteen-preorder-dark.svg" width="420">
+    </div>
+    <div class="card">
+      <span class="tag">card-classic-tiles-website-dark.svg</span>
+      <img src="assets/card-classic-tiles-website-dark.svg" width="420">
+    </div>
+    <div class="card">
+      <span class="tag">card-aarunya-yoga-website-dark.svg</span>
+      <img src="assets/card-aarunya-yoga-website-dark.svg" width="420">
+    </div>
+    <div class="card">
+      <span class="tag">card-H.J-Idiyappam-dark.svg</span>
+      <img src="assets/card-H.J-Idiyappam-dark.svg" width="420">
+    </div>
+  </div>
 
-<h2>metrics (full SVGs after Metrics workflow + METRICS_TOKEN)</h2>
-<div class="row">
-  <div class="card"><span class="tag">metrics.isocalendar.svg</span>
-    <img src="assets/metrics.isocalendar.svg" width="620"></div>
-</div>
+  <h2>Skill Radar & Language Mix</h2>
+  <div class="row">
+    <div class="card">
+      <span class="tag">radar-dark.svg</span>
+      <img src="assets/radar-dark.svg" width="420">
+    </div>
+    <div class="card">
+      <span class="tag">radar-langs-dark.svg</span>
+      <img src="assets/radar-langs-dark.svg" width="420">
+    </div>
+  </div>
+
+  <h2>GitHub Telemetry (Stats Card)</h2>
+  <div class="row">
+    <div class="card">
+      <span class="tag">card-stats-dark.svg (6 tiles with streak & contributions)</span>
+      <img src="assets/card-stats-dark.svg" width="480">
+    </div>
+    <div class="card light">
+      <span class="tag" style="color:#57606a">card-stats-light.svg</span>
+      <img src="assets/card-stats-light.svg" width="480">
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('replay').onclick = () => {
+      document.querySelectorAll('img.portrait').forEach(img => {
+        img.src = 'assets/portrait.svg?' + Date.now();
+      });
+    };
+  </script>
+
+</body>
+</html>

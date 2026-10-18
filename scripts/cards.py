@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
 """
-cards.py - render GitHub stat and repo cards as SVGs. Stdlib only.
+cards.py - render 3D-inspired dimensional GitHub stat and repo cards as SVGs. Stdlib only.
 
-Replaces github-readme-stats / github-profile-trophy / streak-stats, which are
-shared public instances that go down (503), run out of quota (402) or time out.
-These are files in your own repo, so they render as long as GitHub renders.
-
-    python scripts/cards.py --user afsarudeen --out assets
-
+Replaces third-party card generators with reliable, self-hosted vector assets.
 Writes <out>/card-stats-{dark,light}.svg plus one card per repo listed in
 assets/projects.json, as <out>/card-<repo>-{dark,light}.svg.
 
-Star and fork counts come from the live API on every run. Descriptions come from
-projects.json when set, otherwise the repo's own GitHub description.
-
-A token in $GITHUB_TOKEN unlocks the contribution and streak numbers (they need
-the GraphQL API). Without one the card still renders, minus those three tiles.
+    python scripts/cards.py --user afsarudeen --out assets
 """
 
 from __future__ import annotations
@@ -33,14 +24,18 @@ UA = {"User-Agent": "cards.py"}
 
 THEMES = {
     "dark": {
-        "bg": "#0d1117", "border": "#30363d", "title": "#39d353",
+        "bg_top": "#111827", "bg_bot": "#0a0e17",
+        "border": "#243247", "border_glow": "#00F2FE",
+        "title": "#39d353", "title_alt": "#00F2FE",
         "text": "#c9d1d9", "muted": "#8b949e", "value": "#e6edf3",
-        "accent": "#39d353",
+        "accent": "#39d353", "chip_bg": "#162032", "chip_border": "#283953",
     },
     "light": {
-        "bg": "#ffffff", "border": "#d0d7de", "title": "#1a7f37",
+        "bg_top": "#ffffff", "bg_bot": "#f8fafc",
+        "border": "#d0d7de", "border_glow": "#1a7f37",
+        "title": "#1a7f37", "title_alt": "#0969da",
         "text": "#1f2328", "muted": "#57606a", "value": "#1f2328",
-        "accent": "#1a7f37",
+        "accent": "#1a7f37", "chip_bg": "#f3f4f6", "chip_border": "#d0d7de",
     },
 }
 
@@ -51,13 +46,11 @@ LANG_COLOR = {
     "Java": "#b07219", "Go": "#00ADD8", "Rust": "#dea584", "Shell": "#89e051",
     "PLpgSQL": "#336790", "Vue": "#41b883", "Ruby": "#701516", "PHP": "#4F5D95",
     "Jupyter Notebook": "#DA5B0B", "SCSS": "#c6538c", "Svelte": "#ff3e00",
+    "Dart": "#00B4AB", "Flutter": "#02569b",
 }
 
-FONT = "ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif"
+FONT = "ui-sans-serif,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif"
 
-# Octicon outlines, drawn on a 16x16 grid. These are paths rather than the
-# characters U+2605 / U+2442 because those codepoints are missing from a lot of
-# system fonts and fall back to a tofu box.
 ICON_STAR = ("M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 "
              "2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 "
              "01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z")
@@ -139,8 +132,6 @@ def fetch_contributions(user: str, token: str | None):
         run = run + 1 if c > 0 else 0
         longest = max(longest, run)
 
-    # Today counts only if it already has activity; an empty today does not
-    # break a streak that was alive yesterday.
     current = 0
     for date, c in reversed(days):
         if c > 0:
@@ -178,7 +169,6 @@ def wrap(text: str, size: float, max_w: float, max_lines: int) -> list[str]:
     if cur and len(lines) < max_lines:
         lines.append(cur)
     if len(lines) == max_lines and words:
-        # did everything fit?
         used = len(" ".join(lines).split())
         if used < len(words):
             while lines and text_width(lines[-1] + "…", size) > max_w:
@@ -187,14 +177,37 @@ def wrap(text: str, size: float, max_w: float, max_lines: int) -> list[str]:
     return lines
 
 
-def frame(w, h, c, body, label):
+def frame(w, h, c, body, label, theme="dark"):
+    card_id = f"c_{theme}_{w}_{h}"
+    defs = []
+    defs.append(f'<linearGradient id="{card_id}_bg" x1="0%" y1="0%" x2="100%" y2="100%">')
+    defs.append(f'<stop offset="0%" stop-color="{c["bg_top"]}"/>')
+    defs.append(f'<stop offset="100%" stop-color="{c["bg_bot"]}"/>')
+    defs.append('</linearGradient>')
+
+    if theme == "dark":
+        defs.append(f'<linearGradient id="{card_id}_edge" x1="0%" y1="0%" x2="100%" y2="0%">')
+        defs.append('<stop offset="0%" stop-color="#00F2FE" stop-opacity="0.85"/>')
+        defs.append('<stop offset="50%" stop-color="#39D353" stop-opacity="0.95"/>')
+        defs.append('<stop offset="100%" stop-color="#4FACFE" stop-opacity="0.4"/>')
+        defs.append('</linearGradient>')
+        top_accent = f'<path d="M 14 1.5 L {w - 14} 1.5" stroke="url(#{card_id}_edge)" stroke-width="2" stroke-linecap="round"/>'
+        ambient = (f'<circle cx="{w - 40}" cy="20" r="70" fill="#00F2FE" fill-opacity="0.04" filter="blur(20px)"/>'
+                   f'<circle cx="30" cy="{h - 20}" r="60" fill="#39D353" fill-opacity="0.03" filter="blur(20px)"/>')
+    else:
+        top_accent = f'<path d="M 14 1.5 L {w - 14} 1.5" stroke="{c["border_glow"]}" stroke-width="2" stroke-linecap="round"/>'
+        ambient = ""
+
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
         f'width="{w}" height="{h}" role="img" aria-label="{esc(label)}" '
         f'font-family="{FONT}">'
-        f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="10" '
-        f'fill="{c["bg"]}" stroke="{c["border"]}"/>'
-        f"{body}</svg>"
+        f'<defs>{"".join(defs)}</defs>'
+        f'<rect x="0.5" y="0.5" width="{w - 1}" height="{h - 1}" rx="12" '
+        f'fill="url(#{card_id}_bg)" stroke="{c["border"]}" stroke-width="1"/>'
+        f'{top_accent}'
+        f'{ambient}'
+        f'{body}</svg>'
     )
 
 
@@ -205,80 +218,106 @@ def frame(w, h, c, body, label):
 
 def render_stats(user, stats, theme):
     c = THEMES[theme]
-    pad = 22
+    pad = 20
     tiles = [(v, k) for k, v in stats]
     cols = 3
     rows = (len(tiles) + cols - 1) // cols
-    # Height follows the tile count, so the card does not leave a dead band when
-    # the contribution tiles are unavailable. Measured off the last row's label
-    # baseline rather than a nominal row height.
-    rh, W = 46, 480
-    H = pad + 52 + (rows - 1) * rh + 17 + pad
+    rh, W = 58, 480
+    H = pad + 46 + rows * rh + pad
     tw = (W - 2 * pad) / cols
 
     out = [
-        f'<text x="{pad}" y="{pad + 14}" font-size="15" font-weight="700" '
-        f'fill="{c["title"]}">{esc(user)}</text>',
-        f'<text x="{W - pad}" y="{pad + 14}" font-size="11" text-anchor="end" '
-        f'fill="{c["muted"]}">at a glance</text>',
-        f'<line x1="{pad}" y1="{pad + 26}" x2="{W - pad}" y2="{pad + 26}" '
-        f'stroke="{c["border"]}"/>',
+        f'<text x="{pad}" y="{pad + 15}" font-size="14" font-weight="700" letter-spacing="0.05em" '
+        f'fill="{c["title"]}">{esc(user).upper()}</text>',
+        f'<circle cx="{W - pad - 120}" cy="{pad + 11}" r="4" fill="{c["accent"]}"/>',
+        f'<text x="{W - pad}" y="{pad + 15}" font-size="11" font-weight="600" text-anchor="end" '
+        f'fill="{c["muted"]}">ACTIVITY TELEMETRY</text>',
+        f'<line x1="{pad}" y1="{pad + 28}" x2="{W - pad}" y2="{pad + 28}" '
+        f'stroke="{c["border"]}" stroke-opacity="0.8"/>',
     ]
-    top = pad + 52
+
+    top = pad + 40
     for i, (value, label) in enumerate(tiles):
-        cx = pad + (i % cols) * tw
-        cy = top + (i // cols) * rh
+        col_idx = i % cols
+        row_idx = i // cols
+        cx = pad + col_idx * tw
+        cy = top + row_idx * rh
+        card_w = tw - 8
+        card_h = 50
+
+        # 3D-inspired recessed panel for each tile
         out.append(
-            f'<text x="{cx:.0f}" y="{cy:.0f}" font-size="23" font-weight="700" '
+            f'<rect x="{cx:.0f}" y="{cy:.0f}" width="{card_w:.0f}" height="{card_h:.0f}" rx="8" '
+            f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
+        )
+        out.append(
+            f'<text x="{cx + 10:.0f}" y="{cy + 24:.0f}" font-size="18" font-weight="800" '
             f'fill="{c["value"]}">{esc(value)}</text>'
         )
         out.append(
-            f'<text x="{cx:.0f}" y="{cy + 17:.0f}" font-size="10.5" '
+            f'<text x="{cx + 10:.0f}" y="{cy + 40:.0f}" font-size="10" font-weight="500" '
             f'fill="{c["muted"]}">{esc(label)}</text>'
         )
-    return frame(W, H, c, "".join(out), f"{user} GitHub statistics")
+    return frame(W, H, c, "".join(out), f"{user} GitHub statistics", theme)
 
 
 def render_repo(repo, theme):
     c = THEMES[theme]
-    W, H = 420, 132
+    W, H = 420, 142
     pad = 18
     out = []
 
-    out.append(icon(ICON_REPO, pad, pad, 15, c["muted"]))
+    # 3D Icon container box
     out.append(
-        f'<text x="{pad + 22}" y="{pad + 12}" font-size="14.5" font-weight="700" '
+        f'<rect x="{pad}" y="{pad}" width="26" height="26" rx="6" '
+        f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
+    )
+    out.append(icon(ICON_REPO, pad + 5, pad + 5, 16, c["title"]))
+
+    out.append(
+        f'<text x="{pad + 34}" y="{pad + 17}" font-size="14.5" font-weight="700" '
         f'fill="{c["title"]}">{esc(repo["name"])}</text>'
     )
 
-    desc = repo.get("description") or "No description yet."
+    desc = repo.get("description") or "No description provided."
     for i, line in enumerate(wrap(desc, 11.5, W - 2 * pad, 3)):
         out.append(
-            f'<text x="{pad}" y="{pad + 36 + i * 16}" font-size="11.5" '
+            f'<text x="{pad}" y="{pad + 44 + i * 16}" font-size="11.5" '
             f'fill="{c["text"]}">{esc(line)}</text>'
         )
 
-    fy = H - pad - 2
+    fy = H - pad
     x = pad
     if repo.get("language"):
-        col = LANG_COLOR.get(repo["language"], c["muted"])
-        out.append(f'<circle cx="{x + 5}" cy="{fy - 4}" r="5" fill="{col}"/>')
+        lang = repo["language"]
+        col = LANG_COLOR.get(lang, c["muted"])
+        lw = text_width(lang, 10.5) + 24
         out.append(
-            f'<text x="{x + 15}" y="{fy}" font-size="11" fill="{c["muted"]}">'
-            f'{esc(repo["language"])}</text>'
+            f'<rect x="{x}" y="{fy - 14}" width="{lw:.0f}" height="18" rx="9" '
+            f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
         )
-        x += 15 + text_width(repo["language"], 11) + 18
+        out.append(f'<circle cx="{x + 8}" cy="{fy - 5}" r="4" fill="{col}"/>')
+        out.append(
+            f'<text x="{x + 16}" y="{fy - 1}" font-size="10.5" font-weight="600" fill="{c["text"]}">'
+            f'{esc(lang)}</text>'
+        )
+        x += lw + 8
 
     for path, count in ((ICON_STAR, repo.get("stars", 0)),
                         (ICON_FORK, repo.get("forks", 0))):
-        out.append(icon(path, x, fy - 11, 12, c["muted"]))
+        cw = text_width(str(count), 10.5) + 26
         out.append(
-            f'<text x="{x + 17}" y="{fy}" font-size="11" fill="{c["muted"]}">'
+            f'<rect x="{x}" y="{fy - 14}" width="{cw:.0f}" height="18" rx="9" '
+            f'fill="{c["chip_bg"]}" stroke="{c["chip_border"]}" stroke-width="1"/>'
+        )
+        out.append(icon(path, x + 7, fy - 10, 11, c["muted"]))
+        out.append(
+            f'<text x="{x + 21}" y="{fy - 1}" font-size="10.5" font-weight="600" fill="{c["muted"]}">'
             f'{count}</text>'
         )
-        x += 17 + text_width(str(count), 11) + 18
+        x += cw + 8
 
-    return frame(W, H, c, "".join(out), f'{repo["name"]} repository card')
+    return frame(W, H, c, "".join(out), f'{repo["name"]} repository card', theme)
 
 
 # --------------------------------------------------------------------------- #
@@ -305,19 +344,19 @@ def main(argv=None):
         if len(batch) < 100:
             break
         page += 1
-    owned = [r for r in repos if not r["fork"]]
-    stars = sum(r["stargazers_count"] for r in owned)
+    owned = [r for r in repos if not r.get("fork")]
+    stars = sum(r.get("stargazers_count", 0) for r in owned)
 
-    tiles = [("Total stars", f"{stars:,}"),
-             ("Public repos", f"{user['public_repos']:,}"),
-             ("Followers", f"{user['followers']:,}")]
+    tiles = [("Total Stars", f"{stars:,}"),
+             ("Public Repos", f"{user.get('public_repos', 0):,}"),
+             ("Followers", f"{user.get('followers', 0):,}")]
 
     contrib = fetch_contributions(args.user, token)
     if contrib:
         total, current, longest = contrib
         tiles += [("Contributions (1y)", f"{total:,}"),
-                  ("Current streak", f"{current:,}"),
-                  ("Longest streak", f"{longest:,}")]
+                  ("Current Streak", f"{current:,}"),
+                  ("Longest Streak", f"{longest:,}")]
     else:
         print("  note: no usable token, skipping contribution tiles", file=sys.stderr)
 
@@ -341,8 +380,8 @@ def main(argv=None):
             "name": src["name"],
             "description": entry.get("description") or src.get("description"),
             "language": entry.get("language") or src.get("language"),
-            "stars": src["stargazers_count"],
-            "forks": src["forks_count"],
+            "stars": src.get("stargazers_count", 0),
+            "forks": src.get("forks_count", 0),
         }
         for theme in ("dark", "light"):
             dest = args.out / f"card-{src['name']}-{theme}.svg"

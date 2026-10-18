@@ -1,49 +1,49 @@
 {
-  "_comment": "Featured work in README order. Star/fork/language are filled from the GitHub API when the repo exists on the account. description here is the card blurb. Projects without a public repo still appear in the README; cards for those are generated offline.",
+  "_comment": "Featured repositories on GitHub. Star/fork/language are filled from the GitHub API when the repo exists on the account. Descriptions come from here when set, otherwise the repo's own GitHub description.",
   "projects": [
     {
       "repo": "task-management-system",
-      "title": "Task Management System",
-      "kind": "Internship · Full-stack",
-      "description": "Task and workflow management across organizations, teams, projects, and tasks — auth, roles, CRUD, and REST API integration.",
+      "title": "task-management-system",
+      "kind": "Full-Stack System",
+      "description": "Full-stack task and workflow management across organizations, teams, and projects with auth, RBAC, CRUD, and REST APIs.",
       "stack": ["React.js", "Tailwind CSS", "Laravel", "MySQL", "REST API"],
       "github": "https://github.com/afsarudeen/task-management-system",
       "live": null
     },
     {
-      "repo": "nila-tiles",
-      "title": "Nila Tiles",
-      "kind": "Real client project",
-      "description": "Responsive tile showroom site for a real client — product categories, filtering, mobile UI, SEO-focused content, and reusable React components.",
-      "stack": ["React.js", "Tailwind CSS"],
-      "github": null,
-      "live": "https://nilatiles.in"
-    },
-    {
-      "repo": "ram-prabha-builders",
-      "title": "Ram Prabha Builders",
-      "kind": "Real client project",
-      "description": "Business website for a construction company — responsive sections, business-focused layouts, and Tailwind-driven React components.",
-      "stack": ["React.js", "Tailwind CSS"],
-      "github": null,
-      "live": null
-    },
-    {
       "repo": "smart-canteen-preorder",
-      "title": "Smart Canteen Pre-Order",
-      "kind": "College project",
-      "description": "College canteen pre-ordering app with authentication, order flow, token generation, digital billing, and Firebase-backed data.",
+      "title": "smart-canteen-preorder",
+      "kind": "Mobile & Cloud App",
+      "description": "College canteen pre-ordering mobile application with authentication, token generation, digital billing, and Firebase data.",
       "stack": ["Flutter", "Firebase"],
       "github": "https://github.com/afsarudeen/smart-canteen-preorder",
       "live": null
     },
     {
-      "repo": "asset-management-system",
-      "title": "Asset Management System",
-      "kind": "Full-stack project",
-      "description": "Asset management app with separate user and admin interfaces, REST APIs, CRUD flows, and PostgreSQL integration.",
-      "stack": ["React.js", "Next.js", "Node.js", "Express.js", "PostgreSQL"],
-      "github": null,
+      "repo": "classic-tiles-website",
+      "title": "classic-tiles-website",
+      "kind": "Frontend Showroom",
+      "description": "Responsive tile showroom web application with product categories, interactive filtering, and reusable React components.",
+      "stack": ["React.js", "Tailwind CSS", "Vite"],
+      "github": "https://github.com/afsarudeen/classic-tiles-website",
+      "live": null
+    },
+    {
+      "repo": "aarunya-yoga-website",
+      "title": "aarunya-yoga-website",
+      "kind": "Responsive Web App",
+      "description": "Modern yoga studio web platform featuring class discovery, schedules, workshops, instructor profiles, and booking.",
+      "stack": ["React.js", "Tailwind CSS", "Vite"],
+      "github": "https://github.com/afsarudeen/aarunya-yoga-website",
+      "live": null
+    },
+    {
+      "repo": "H.J-Idiyappam",
+      "title": "H.J-Idiyappam",
+      "kind": "Business Showcase",
+      "description": "Handmade idiyappam business showcase website featuring English and Tamil bilingual content and direct WhatsApp enquiry.",
+      "stack": ["React.js", "Tailwind CSS", "Vite"],
+      "github": "https://github.com/afsarudeen/H.J-Idiyappam",
       "live": null
     }
   ]
